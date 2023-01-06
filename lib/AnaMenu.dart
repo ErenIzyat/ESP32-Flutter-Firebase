@@ -10,11 +10,8 @@ class AnaMenu extends StatefulWidget {
   _AnaMenuState createState() => _AnaMenuState();
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MaterialApp(home: AnaMenu()));
-}
+
+
 
 class _AnaMenuState extends State<AnaMenu> {
   Map<String, dynamic> sensorData = {};
@@ -29,6 +26,20 @@ class _AnaMenuState extends State<AnaMenu> {
         sensorData = Map<String, dynamic>.from(event.snapshot.value as Map);
       });
     });
+  }
+
+  bool IsInDanger() {
+    int count = 0;
+    bool isInDanger = false;
+
+    if (sensorData['sicaklik'] > 20 ||
+        sensorData['nem'] > 70 ||
+        sensorData['gaz'] > 2500 ||
+        sensorData['titresim'] == true) {
+      return true;
+    }
+
+    return false;
   }
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +60,6 @@ class _AnaMenuState extends State<AnaMenu> {
                       MaterialPageRoute(builder: (context) => Calisan()),
                     );
                   },
-
                 ),
               ),
               Padding(
@@ -69,6 +79,28 @@ class _AnaMenuState extends State<AnaMenu> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: IsInDanger()
+          ? FloatingActionButton(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Acil Durum!'),
+              content: Text('Lütfen acil yardım çağırın.'),
+              actions: [
+                FloatingActionButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Icon(Icons.close),
+                ),
+              ],
+            );
+          },
+        ),
+        child: Icon(Icons.warning),
+      )
+          : Container(),
     );
   }
+
 }
