@@ -1,16 +1,10 @@
-# erenesp
+# Emergency Notification System
 
-A new Flutter project.
+Get notifications in emergencies.
 
-## Getting Started
+- A vibration, temperature, gas data analysis application. 
 
-This project is a starting point for a Flutter application.
+## ESP32 System Design
 
-A few resources to get you started if this is your first Flutter project:
+![image](https://user-images.githubusercontent.com/56388061/213215505-8073096c-580f-410b-b0f4-fbce379eeee5.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
