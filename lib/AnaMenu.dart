@@ -12,9 +12,10 @@ class AnaMenu extends StatefulWidget {
 
 class _AnaMenuState extends State<AnaMenu> {
   Map<String, dynamic> sensorData = {};
+  Map<String, dynamic> calisanlar = {};
   @override
-
   void initState() {
+    getName();
     super.initState();
     final databaseReference = FirebaseDatabase.instance.ref('sensor');
     databaseReference.onValue.listen((DatabaseEvent event) {
@@ -22,6 +23,18 @@ class _AnaMenuState extends State<AnaMenu> {
         sensorData = Map<String, dynamic>.from(event.snapshot.value as Map);
       });
     });
+  }
+
+  Future<void> getName() async {
+    final dbRef = FirebaseDatabase.instance.ref('calisanlar');
+    final snapshot = await dbRef.get();
+    if (snapshot.value == null) {
+      print("null");
+    } else {
+      setState(() {
+        calisanlar = Map<String, dynamic>.from(snapshot.value as Map);
+      });
+    }
   }
 
   bool IsInDanger() {
@@ -36,72 +49,66 @@ class _AnaMenuState extends State<AnaMenu> {
     return false;
   }
 
-
   Widget build(BuildContext context) {
     return Scaffold(
-    backgroundColor:  IsInDanger() ? Colors.red : Colors.purple[100],
-
-    body:
-    Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Row(
-
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FloatingActionButton(
-                backgroundColor: Colors.lightBlue,
-                child: Icon(Icons.account_circle_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Calisan()),
-                  );
-                },
+      backgroundColor: IsInDanger() ? Colors.red : Colors.purple[100],
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.lightBlue,
+                  child: Icon(Icons.account_circle_outlined),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Calisan()),
+                    );
+                  },
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FloatingActionButton(
-                backgroundColor: Colors.lightBlue,
-                child: Icon(Icons.error_outline_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyApp()),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-    floatingActionButton: IsInDanger()
-        ? FloatingActionButton(
-      onPressed: () => showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Acil Durum!'),
-            content: Text('Lütfen acil yardım çağırın.'),
-            actions: [
-              FloatingActionButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Icon(Icons.close),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.lightBlue,
+                  child: Icon(Icons.error_outline_outlined),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyApp()),
+                    );
+                  },
+                ),
               ),
             ],
-          );
-        },
+          ),
+        ],
       ),
-      child: Icon(Icons.warning),
-    )
-        : Container(),
-  );
-
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: IsInDanger()
+          ? FloatingActionButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Acil Durum!'),
+                    content: Text('Lütfen acil yardım çağırın.'),
+                    actions: [
+                      FloatingActionButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Icon(Icons.close),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              child: Icon(Icons.warning),
+            )
+          : Container(),
+    );
   }
-
 }

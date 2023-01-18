@@ -20,8 +20,9 @@ void main() async {
 class _LoginWidgetState extends State<LoginWidget> {
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> calisanlar = {};
+  Map<String, String> calisansoyisim = {};
+  Map<String, String> calisanisim = {};
   @override
-  String deneme = "";
   String _isim = " ";
   String _soyisim = " ";
 
@@ -32,10 +33,39 @@ class _LoginWidgetState extends State<LoginWidget> {
   }
   Future<void> getName() async {
     final dbRef = FirebaseDatabase.instance.ref('calisanlar');
-    final snapshot = await dbRef.child('calisanlar').get();
-    setState(() {
-      calisanlar = Map<String, dynamic>.from(snapshot.value as Map<String, dynamic>);
-    });
+    final snapshot = await dbRef.get();
+    if(snapshot.value == null ){
+      print("null");
+    }
+    else{
+      setState(() {
+        calisanlar = Map<String, dynamic>.from(snapshot.value as Map);
+        print(calisanlar.entries);
+        var entryString = calisanlar.toString();
+        calisanlar.forEach((key, value) {
+          String isim = "";
+          String soyisim = "";
+          if(value.containsKey("isim")){
+            isim = value["isim"];
+          }
+          if(value.containsKey("soyisim")){
+            isim = value["soyisim"];
+          }
+          calisansoyisim[isim] = soyisim;
+        });
+        calisanlar.forEach((key, value) {
+          String isim = "";
+          String soyisim = "";
+          if(value.containsKey("soyisim")){
+            isim = value["soyisim"];
+          }
+          if(value.containsKey("isim")){
+            isim = value["isim"];
+          }
+          calisanisim[isim] = soyisim;
+        });
+      });
+    }
   }
 
 
@@ -63,11 +93,13 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
                 validator: (value) {
                   if ((value as String).isEmpty) {
-                    return 'Lütfen email girin';
+                    return 'Lütfen isim girin';
                   }
                   return null;
                 },
-                onSaved: (value) => _isim = value as String,
+                onChanged: (value) {
+                  _isim = value;
+                },
               ),
               SizedBox(height: 20),
               TextFormField(
@@ -84,22 +116,28 @@ class _LoginWidgetState extends State<LoginWidget> {
                   }
                   return null;
                 },
-                onSaved: (value) => _soyisim = value as String,
+                onChanged: (value) {
+                  _soyisim = value;
+                },
               ),
               FloatingActionButton(
                 onPressed: () {
-                  if (_formKey?.currentState?.validate() == true) {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnaMenu(),
-                      ),
-                    );
-                  }
+                  calisanisim.forEach((key, value) {
+                    if(key.toLowerCase() == _isim.toLowerCase()) {
+                      if (_formKey?.currentState?.validate() == true && calisansoyisim.containsKey(_soyisim)) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AnaMenu(),
+                          ),
+                        );
+                      }
+                    }
+                  });
                 },
                 child: Icon(Icons.send),
               ),
+
             ],
           ),
         ),
